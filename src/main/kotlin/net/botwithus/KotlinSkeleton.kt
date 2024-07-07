@@ -51,11 +51,21 @@ class KotlinSkeleton(
             println("Loading NPC Data")
             scriptConfig.load()
 
+            // Check if npcData is present in scriptConfig
+            val npcDataProperty = scriptConfig.getProperty("npcData")
+            if (npcDataProperty.isNullOrEmpty()) {
+                val defaultNpcs = "24854,Grand Exchange (Varrock),3166,3486,0;30308,Kili (City of Um),1148,1807,1;30289,Malignius Mortifier (Necro Ritual Site),1035,1763,1"
+                scriptConfig.addProperty("npcData", defaultNpcs)
+                println("No NPC data found in config.")
+                loadNpcData()
+                return
+            }
+
             // Clear npcList first to prevent duplicates
             npcList.clear()
 
             // Load npcData
-            scriptConfig.getProperty("npcData")?.split(";")?.forEach { line ->
+            npcDataProperty.split(";").forEach { line ->
                 val parts = line.split(",")
                 if (parts.size == 5) {
                     val id = parts[0].toInt()
@@ -115,16 +125,17 @@ class KotlinSkeleton(
 
     private fun collectNpcData() {
         try {
-            val npcPattern = Regex.getPatternForContainingOneOf("Talk to","Attack")
-            val npcs = NpcQuery.newQuery().option(npcPattern).results()
+            val npcs = NpcQuery.newQuery().option("Attack").results() + NpcQuery.newQuery().option("Talk to").results()
             npcs.filterNot { isPlayerFamiliar(it) }.forEach { npc ->
                 val coord = npc.coordinate
                 if (coord != null) {
                     val npcInfo = NpcInfo(npc.configType?.id ?: 0, npc.configType?.name ?: "Unknown", coord)
                     if (npcList.none { it.id == npcInfo.id }) {
                         println("Adding new NPC: $npcInfo")
-                        npcList.add(npcInfo)
-                        saveNpcData()
+                        if(npcInfo.name.isNotEmpty() && npcInfo.coordinate.x != 0 && npcInfo.coordinate.y != 0) {
+                            npcList.add(npcInfo)
+                            saveNpcData()
+                        }
                     }
                 }
             }

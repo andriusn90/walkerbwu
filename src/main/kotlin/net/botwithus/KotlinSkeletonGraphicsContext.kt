@@ -14,11 +14,20 @@ class KotlinSkeletonGraphicsContext(
     private var favourites: MutableList<KotlinSkeleton.NpcInfo> = mutableListOf()
 
     init {
-        // Initialize filteredNpcs with all NPCs initially
-        filteredNpcs.addAll(script.npcList)
-        favourites.addAll(script.favourites)
-        script.selectedNpc = filteredNpcs.first()
-        script.selectedNpc2 = favourites.first()
+        // Ensure NPC list is not empty before accessing
+        if (script.npcList.isNotEmpty()) {
+            filteredNpcs.addAll(script.npcList)
+            script.selectedNpc = filteredNpcs.first()
+        } else {
+            println("NPC list is empty, cannot initialize selectedNpc")
+        }
+
+        if (script.favourites.isNotEmpty()) {
+            favourites.addAll(script.favourites)
+            script.selectedNpc2 = favourites.first()
+        } else {
+            println("Favourites list is empty, cannot initialize selectedNpc2")
+        }
     }
 
     override fun drawSettings() {
