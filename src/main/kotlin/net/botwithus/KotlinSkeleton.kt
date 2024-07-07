@@ -94,7 +94,11 @@ class KotlinSkeleton(
     private fun saveNpcData() {
         try {
             println("Saving NPC data")
-            val npcData = npcList.joinToString(";") { "${it.id},${it.name},${it.coordinate.x},${it.coordinate.y},${it.coordinate.z}" }
+
+            // Remove duplicates
+            val uniqueNpcs = LinkedHashSet(npcList)
+
+            val npcData = uniqueNpcs.joinToString(";") { "${it.id},${it.name},${it.coordinate.x},${it.coordinate.y},${it.coordinate.z}" }
             val favouriteData = favourites.joinToString(",") { "${it.id}" }
             scriptConfig.addProperty("npcData", npcData)
             scriptConfig.addProperty("favourites", favouriteData)
@@ -104,6 +108,7 @@ class KotlinSkeleton(
             println("Error saving NPC data: ${e.message}")
         }
     }
+
 
     fun addToFavourites(npc: NpcInfo) {
         if (!favourites.contains(npc)) {
@@ -130,12 +135,11 @@ class KotlinSkeleton(
                 val coord = npc.coordinate
                 if (coord != null) {
                     val npcInfo = NpcInfo(npc.configType?.id ?: 0, npc.configType?.name ?: "Unknown", coord)
-                    if (npcList.none { it.id == npcInfo.id }) {
+                    if (npcInfo.name.isNotEmpty() && npcInfo.coordinate.x != 0 && npcInfo.coordinate.y != 0) {
+                        npcList.removeAll { it.id == npcInfo.id } // Remove any existing NPC with the same ID
                         println("Adding new NPC: $npcInfo")
-                        if(npcInfo.name.isNotEmpty() && npcInfo.coordinate.x != 0 && npcInfo.coordinate.y != 0) {
-                            npcList.add(npcInfo)
-                            saveNpcData()
-                        }
+                        npcList.add(npcInfo)
+                        saveNpcData()
                     }
                 }
             }
@@ -143,6 +147,7 @@ class KotlinSkeleton(
             println("Error collecting NPC data: ${e.message}")
         }
     }
+
 
     private fun isPlayerFamiliar(npc: net.botwithus.rs3.game.scene.entities.characters.npc.Npc): Boolean {
         val familiarIds = setOf(0,1)
@@ -174,6 +179,7 @@ class KotlinSkeleton(
     override fun initialize(): Boolean {
         super.initialize()
         this.sgc = KotlinSkeletonGraphicsContext(this, console)
+        this.isBackgroundScript = true
 
         try {
             println("Initializing Script")
