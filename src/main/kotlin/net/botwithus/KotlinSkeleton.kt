@@ -33,6 +33,7 @@ class KotlinSkeleton(
     private val walkQueue: Queue<Coordinate> = LinkedList()
     var searchNpc = ""
     var searchNpc2 = ""
+    var customLocation = ""
     enum class BotState {
         IDLE,
     }
@@ -55,6 +56,7 @@ class KotlinSkeleton(
             val npcDataProperty = scriptConfig.getProperty("npcData")
             if (npcDataProperty.isNullOrEmpty()) {
                 val defaultNpcs = "24854,Grand Exchange (Varrock),3166,3486,0;30308,Kili (City of Um),1148,1807,1;30289,Malignius Mortifier (Necro Ritual Site),1035,1763,1"
+                scriptConfig.addProperty("favourites", "24854,")
                 scriptConfig.addProperty("npcData", defaultNpcs)
                 println("No NPC data found in config.")
                 loadNpcData()
@@ -117,6 +119,14 @@ class KotlinSkeleton(
         }
     }
 
+    fun createCustomLocation(coord: Coordinate, customName: String) {
+        val rand = random.nextLong(100000,999999).toInt()
+        npcList.add(NpcInfo(rand,customName,coord))
+        favourites.add(NpcInfo(rand,customName,coord))
+        println("Custom Location Added.")
+        saveNpcData()
+    }
+
     fun removeFromFavourites(npc: NpcInfo) {
         if (favourites.contains(npc)) {
             favourites.remove(npc)
@@ -137,7 +147,7 @@ class KotlinSkeleton(
                     val npcInfo = NpcInfo(npc.configType?.id ?: 0, npc.configType?.name ?: "Unknown", coord)
                     if (npcInfo.name.isNotEmpty() && npcInfo.coordinate.x != 0 && npcInfo.coordinate.y != 0) {
                         npcList.removeAll { it.id == npcInfo.id } // Remove any existing NPC with the same ID
-                        println("Adding new NPC: $npcInfo")
+                        ///println("Adding new NPC: $npcInfo")
                         npcList.add(npcInfo)
                         saveNpcData()
                     }
@@ -179,7 +189,6 @@ class KotlinSkeleton(
     override fun initialize(): Boolean {
         super.initialize()
         this.sgc = KotlinSkeletonGraphicsContext(this, console)
-        this.isBackgroundScript = true
 
         try {
             println("Initializing Script")

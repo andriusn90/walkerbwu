@@ -1,5 +1,7 @@
 package net.botwithus
 
+import net.botwithus.rs3.game.Client
+import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer
 import net.botwithus.rs3.imgui.ImGui
 import net.botwithus.rs3.imgui.ImGuiWindowFlag
 import net.botwithus.rs3.script.ScriptConsole
@@ -33,15 +35,14 @@ class KotlinSkeletonGraphicsContext(
     override fun drawSettings() {
         super.drawSettings()
 
-        ImGui.SetWindowSize(415f, 403f)
-
+        val windowFlags = ImGuiWindowFlag.None.value or ImGuiWindowFlag.NoResize.value
         // Main window for the script
-        if (ImGui.Begin("My script", ImGuiWindowFlag.None.value)) {
-
+        if (ImGui.Begin("BWU Walker 1.0", windowFlags)) {
+            ImGui.SetWindowSize(450f, 425f)
             if (ImGui.BeginTabBar("My bar", ImGuiWindowFlag.None.value)) {
 
                 // Settings tab
-                if (ImGui.BeginTabItem("Settings", ImGuiWindowFlag.None.value)) {
+                if (ImGui.BeginTabItem("Information", ImGuiWindowFlag.None.value)) {
                     drawSettingsTab()
                     ImGui.EndTabItem()
                 }
@@ -65,7 +66,7 @@ class KotlinSkeletonGraphicsContext(
     }
 
     private fun drawSettingsTab() {
-        ImGui.Text("Welcome to my script!")
+        ImGui.Text("Player goes to places. Always keep one place in favourites, otherwise crashes.")
         ImGui.Text("My script's state is: ${script.botState}")
     }
 
@@ -78,7 +79,7 @@ class KotlinSkeletonGraphicsContext(
             filteredNpcs.addAll(script.npcList)
         }
 
-        ImGui.BeginChild("npcList", 0f, 256f, true, 256)
+        ImGui.BeginChild("npcList", 0f, 308f, true, 256)
         filteredNpcs.filter { it.name.contains(script.searchNpc, ignoreCase = true) }.forEach { npc ->
             if (ImGui.Selectable("${npc.name} (${npc.id})", false, ImGuiWindowFlag.None.value)) {
                 script.selectedNpc = npc
@@ -123,6 +124,12 @@ class KotlinSkeletonGraphicsContext(
                     favourites = script.favourites.toMutableList()
                 }
             }
+        }
+
+        script.customLocation = ImGui.InputText("Enter Custom Name", script.customLocation, 256, ImGuiWindowFlag.None.value)
+        if (ImGui.Button("Create Custom Location")) {
+            Client.getLocalPlayer()?.coordinate?.let { script.createCustomLocation(it, script.customLocation) }
+            favourites = script.favourites.toMutableList()
         }
     }
 
