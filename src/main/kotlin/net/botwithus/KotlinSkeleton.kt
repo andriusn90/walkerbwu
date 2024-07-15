@@ -9,6 +9,7 @@ import net.botwithus.KotlinSkeleton.QuestObjects.questBilrach
 import net.botwithus.KotlinSkeleton.QuestObjects.questChaosDemon
 import net.botwithus.KotlinSkeleton.QuestObjects.questEnakhra
 import net.botwithus.KotlinSkeleton.QuestObjects.questGeneralKhazard
+import net.botwithus.KotlinSkeleton.QuestObjects.questHealthOrb
 import net.botwithus.KotlinSkeleton.QuestObjects.questMemoryFragment
 import net.botwithus.KotlinSkeleton.QuestObjects.questMoia
 import net.botwithus.KotlinSkeleton.QuestObjects.questPointOfInterest
@@ -279,6 +280,7 @@ class KotlinSkeleton(
         val questAvaryss: NpcQuery = NpcQuery.newQuery().name("Avaryss, the Unceasing")
         val questMoia: NpcQuery = NpcQuery.newQuery().name("Moia")
         val questTrindine: NpcQuery = NpcQuery.newQuery().name("Trindine")
+        val questHealthOrb: NpcQuery = NpcQuery.newQuery().name("Health orb")
         private val enemiesPattern: Pattern =  Regex.getPatternForContainingOneOf("Avaryss, the Unceasing", "Chaos demon", "Zamorakian cultist", "Chaos witch")
     }
 
@@ -504,6 +506,8 @@ class KotlinSkeleton(
                     return
                 }
 
+                questHealthOrb.results().nearest()?.interact("Restore health")
+                delay(599)
                 questChaosDemon.results().nearest()?.interact("Attack")
                 delay(1000)
                 MiniMenu.interact(ComponentAction.COMPONENT.type, 1, -1, 68550678) //3
