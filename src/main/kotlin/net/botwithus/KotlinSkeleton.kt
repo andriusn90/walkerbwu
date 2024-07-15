@@ -279,7 +279,7 @@ class KotlinSkeleton(
         val questAvaryss: NpcQuery = NpcQuery.newQuery().name("Avaryss, the Unceasing")
         val questMoia: NpcQuery = NpcQuery.newQuery().name("Moia")
         val questTrindine: NpcQuery = NpcQuery.newQuery().name("Trindine")
-        private val enemiesPattern: Pattern =  Regex.getPatternForContainingOneOf("Chaos demon", "Zamorakian cultist", "Chaos witch")
+        private val enemiesPattern: Pattern =  Regex.getPatternForContainingOneOf("Avaryss, the Unceasing", "Chaos demon", "Zamorakian cultist", "Chaos witch")
     }
 
 
