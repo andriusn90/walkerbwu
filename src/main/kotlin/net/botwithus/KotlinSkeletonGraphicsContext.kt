@@ -59,15 +59,30 @@ class KotlinSkeletonGraphicsContext(
                     ImGui.EndTabItem()
                 }
 
+                if (ImGui.BeginTabItem("Quests", ImGuiWindowFlag.None.value)) {
+                    drawQuestsTab()
+                    ImGui.EndTabItem()
+                }
+
                 ImGui.EndTabBar()
             }
             ImGui.End()
         }
     }
 
+    private fun drawQuestsTab() {
+        if (ImGui.Button("Daughter of Chaos")) {
+            script.botState = KotlinSkeleton.BotState.DAUGHTER_OF_CHAOS
+        }
+    }
+
     private fun drawSettingsTab() {
         ImGui.Text("Player goes to places. Always keep one place in favourites, otherwise crashes.")
         ImGui.Text("My script's state is: ${script.botState}")
+
+        if (ImGui.Button("Stop")) {
+            script.botState = KotlinSkeleton.BotState.IDLE
+        }
     }
 
     private fun drawNpcNavigationTab() {
