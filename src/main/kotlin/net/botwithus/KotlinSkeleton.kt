@@ -40,6 +40,7 @@ import net.botwithus.rs3.script.LoopingScript
 import net.botwithus.rs3.script.ScriptConsole
 import net.botwithus.rs3.script.config.ScriptConfig
 import java.util.*
+import java.util.regex.Pattern
 
 
 class KotlinSkeleton(
@@ -114,6 +115,7 @@ class KotlinSkeleton(
             }
             BotState.DAUGHTER_OF_CHAOS -> {
                 ScriptConsole.println("Running this shit.")
+                delay(600)
                 daughtersOfChaosQuest()
             }
         }
@@ -271,17 +273,19 @@ class KotlinSkeleton(
         val questGeneralKhazard: NpcQuery = NpcQuery.newQuery().name("General Khazard").mark()
         val questZemouregal: NpcQuery = NpcQuery.newQuery().name("Zemouregal").mark()
         val questBilrach: NpcQuery = NpcQuery.newQuery().name("Bilrach").mark()
-        val questChaosDemon: NpcQuery = NpcQuery.newQuery().option("Attack").health(60000,1000000)
+        val questChaosDemon: NpcQuery = NpcQuery.newQuery().name(enemiesPattern).option("Attack")
         val questWoundedCultist: NpcQuery = NpcQuery.newQuery().name("Wounded cultist").mark()
         val questAvaryss: NpcQuery = NpcQuery.newQuery().name("Avaryss, the Unceasing")
         val questMoia: NpcQuery = NpcQuery.newQuery().name("Moia")
         val questTrindine: NpcQuery = NpcQuery.newQuery().name("Trindine")
     }
 
+    val enemiesPattern: Pattern = Regex.getPatternForContainsString("Chaos demon", "Zamorakian cultist", "Chaos witch")
+
     fun daughtersOfChaosQuest() {
         val value = VarManager.getVarbitValue(51682)
 
-        if (value == 0 && !Dialog.isOpen()) {
+        if (value == 0 && !Dialog.isOpen() && !Interfaces.isOpen(1500)) {
             walkQueue.add(questStartLocation)
             processWalkQueue()
 
