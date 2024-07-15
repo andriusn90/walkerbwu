@@ -39,6 +39,7 @@ import net.botwithus.rs3.script.Execution
 import net.botwithus.rs3.script.LoopingScript
 import net.botwithus.rs3.script.ScriptConsole
 import net.botwithus.rs3.script.config.ScriptConfig
+import net.botwithus.rs3.util.Regex
 import java.util.*
 import java.util.regex.Pattern
 
@@ -273,14 +274,14 @@ class KotlinSkeleton(
         val questGeneralKhazard: NpcQuery = NpcQuery.newQuery().name("General Khazard").mark()
         val questZemouregal: NpcQuery = NpcQuery.newQuery().name("Zemouregal").mark()
         val questBilrach: NpcQuery = NpcQuery.newQuery().name("Bilrach").mark()
-        val questChaosDemon: NpcQuery = NpcQuery.newQuery().name(enemiesPattern).option("Attack")
+        val questChaosDemon: NpcQuery by lazy { NpcQuery.newQuery().name(enemiesPattern).option("Attack") }
         val questWoundedCultist: NpcQuery = NpcQuery.newQuery().name("Wounded cultist").mark()
         val questAvaryss: NpcQuery = NpcQuery.newQuery().name("Avaryss, the Unceasing")
         val questMoia: NpcQuery = NpcQuery.newQuery().name("Moia")
         val questTrindine: NpcQuery = NpcQuery.newQuery().name("Trindine")
+        private val enemiesPattern: Pattern =  Regex.getPatternForContainingOneOf("Chaos demon", "Zamorakian cultist", "Chaos witch")
     }
 
-    val enemiesPattern: Pattern = Regex.getPatternForContainsString("Chaos demon", "Zamorakian cultist", "Chaos witch")
 
     fun daughtersOfChaosQuest() {
         val value = VarManager.getVarbitValue(51682)
@@ -505,11 +506,11 @@ class KotlinSkeleton(
 
                 questChaosDemon.results().nearest()?.interact("Attack")
                 delay(1000)
-                MiniMenu.interact(ComponentAction.COMPONENT.type, 1, -1, 68550673)
+                MiniMenu.interact(ComponentAction.COMPONENT.type, 1, -1, 68550678) //3
                 delay(500)
-                MiniMenu.interact(ComponentAction.COMPONENT.type, 1, -1, 68550678)
+                MiniMenu.interact(ComponentAction.COMPONENT.type, 1, -1, 68550673) // 2
                 delay(500)
-                MiniMenu.interact(SelectableAction.SELECTABLE_COMPONENT.type, 1, -1, 68550668)
+                MiniMenu.interact(SelectableAction.SELECTABLE_COMPONENT.type, 1, -1, 68550668)  //1
                 delay(500)
                 questChaosDemon.results().nearest()?.interact("Vault")
                 delay(500)
